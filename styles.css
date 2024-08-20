@@ -1,18 +1,18 @@
 :root {
   --background: #f6f6f6;
-  --font: #222;
-  --border: #333;
-  --screen: rgb(171, 195, 209);
-  --calculator: #6b6b6b;
-  --btn: #eee;
-  --btn-hover: #ddd;
-  --btn-active: #ccc;
-  --btn-red: #faa;
-  --btn-red-hover: #e99;
-  --btn-red-active: #d88;
-  /*--btn-blue: #aaf;
-  --btn-blue-hover: #99e;
-  --btn-blue-active: #88d; */
+  --font: #010101;
+  --border: #1b1b1b;
+  --screen: #d9e7f3;
+  --calculator: #3b3d3b;
+  --btn: #e5e6eb;;
+  --btn-hover: #d2d4dc;
+  --btn-active: #c0c2ce;
+  --btn-red: #ff6666;
+  --btn-red-hover: #e95858;
+  --btn-red-active: #db5151;
+  --btn-blue: #adcbe3;
+  --btn-blue-hover: #9cb8cf;
+  --btn-blue-active: #89a4b9;
 }
 
 *,
@@ -22,8 +22,6 @@
   padding: 0;
   margin: 0;
 }
-
-
 
 html {
   /* footer support */
@@ -96,9 +94,9 @@ button {
   grid-gap: 10px;
 }
 
-.span-2 {
+/* .span-2 {
   grid-column: span 2;
-}
+} */
 
 .btn {
   padding: 20px;
@@ -127,24 +125,17 @@ button {
 .btn-red:active {
   background-color: var(--btn-red-active);
 }
-/*
-.btn-blue {
+
+button[data-operator] {
   background-color: var(--btn-blue);
 }
 
-.btn-blue:hover {
+button[data-operator]:hover {
   background-color: var(--btn-blue-hover);
 }
 
-.btn-blue:active {
+button[data-operator]:active {
   background-color: var(--btn-blue-active);
-} */
-
-/* Disables input spinners in calc screen */
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 /* FOOTER */
