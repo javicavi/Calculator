@@ -1,8 +1,12 @@
 let firstOpd = "";
 let currentOperator = "";
 let secondOpd = "";
-// Change to concat?
-let mainScreenEmpty = true;
+let avoidConcat = true;
+
+let operand1 = "";
+let operand2 = "";
+let operatorL = ""; 
+let operatorAcc = "";
 
 const numberButtons = document.querySelectorAll("[data-number]");
 const operatorButtons = document.querySelectorAll("[data-operator]");
@@ -45,42 +49,15 @@ operatorButtons.forEach(button =>
   button.addEventListener("click", () => appendOperator(button.textContent))
 );
 
-function keyboardSupport(e){
-  if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
-  if (e.key === ".") appendPoint();
-  if (e.key === "Backspace") clearEntry();
-  if (e.key === "Delete") clear();
-  if (e.key === "%") mainScreen.textContent = percent(firstOpd, secondOpd); // Check
-  if (e.key === "Enter") equal();
-  if (e.key === "+" || e.key === "-") appendOperator(e.key);
-  if (e.key === "*") appendOperator("x");
-  if (e.key === "/") appendOperator("÷");
-}
-
-function clearEntry(){
-  mainScreen.textContent = "0";
-  mainScreenEmpty = true;
-}
-
-function clear(){
-  if (mainScreen.textContent === "ERROR"){
-    clearButton.classList.remove("btn-red");
-    allButtons.forEach(button => {
-      if (button.id !== "cBtn")
-        button.disabled = false;
-    });
-  }
-  mainScreen.textContent = "0";
-  secondaryScreen.textContent = "";
-  firstOpd = "";
-  currentOperator = "";
-  secondOpd = "";
-  mainScreenEmpty = true;
+function appendNumber2(num)
+{
+  if(operand1 === "0") operand1 = num;
+  else operand1 += num;
 }
 
 function appendNumber(number){
-  if (mainScreenEmpty === true){
-    mainScreenEmpty = false;
+  if (avoidConcat === true){
+    avoidConcat = false;
     mainScreen.textContent = number;
   } else {
     mainScreen.textContent += number;
@@ -94,7 +71,7 @@ function appendOperator(operator){
   mainScreen.textContent = firstOpd;
   currentOperator = operator;
   secondaryScreen.textContent = `${firstOpd} ${currentOperator}`;
-  mainScreenEmpty = true;
+  avoidConcat = true;
 }
 
 function equal(){
@@ -112,7 +89,7 @@ function equal(){
       firstOpd = "";
       currentOperator = "";
       secondOpd = "";
-      mainScreenEmpty = true;
+      avoidConcat = true;
     }
   }
 }
@@ -178,4 +155,37 @@ function pointCheck(num){
     return num = num.slice(0,-1);
   }
   return num;
+}
+
+function keyboardSupport(e){
+  if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
+  if (e.key === ".") appendPoint();
+  if (e.key === "Backspace") clearEntry();
+  if (e.key === "Delete") clear();
+  if (e.key === "%") mainScreen.textContent = percent(firstOpd, secondOpd); // Check
+  if (e.key === "Enter") equal();
+  if (e.key === "+" || e.key === "-") appendOperator(e.key);
+  if (e.key === "*") appendOperator("x");
+  if (e.key === "/") appendOperator("÷");
+}
+
+function clearEntry(){
+  mainScreen.textContent = "0";
+  avoidConcat = true;
+}
+
+function clear(){
+  if (mainScreen.textContent === "ERROR"){
+    clearButton.classList.remove("btn-red");
+    allButtons.forEach(button => {
+      if (button.id !== "cBtn")
+        button.disabled = false;
+    });
+  }
+  mainScreen.textContent = "0";
+  secondaryScreen.textContent = "";
+  firstOpd = "";
+  currentOperator = "";
+  secondOpd = "";
+  avoidConcat = true;
 }
