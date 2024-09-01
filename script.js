@@ -2,7 +2,10 @@ let operand1 = "";
 let operand2 = "";
 let operator = ""; 
 let operandAccumulator  = "";
+let equalDecimalOp1 = false;
 
+const equalRegex = /=/;
+const dotRegex = /\./;
 
 const numberButtons = document.querySelectorAll("[data-number]");
 const operatorButtons = document.querySelectorAll("[data-operator]");
@@ -59,38 +62,53 @@ function appendNumber(num)
       else operand1 += num;
       redraw(operand1);
     }
+
     else if(operator != "" 
       && operand2 == "")
     {
       operand2 = num;
-      redraw(num)
+      redraw(num);
     }
+
     else if(operand1 != "" 
       && operator != "" 
       && operand2 == "")
     {
       operand2 = num;
-      redraw(num)
+      redraw(num);
     }
+
+    else if(equalRegex.test(secondaryScreen.textContent) == true)
+    {
+      operand1 = num;
+      redraw(operand1);
+    }
+
     else 
     {
-      operand2 += num;
-      redraw(operand2);
-    }
+      if(secondaryScreen.textContent == "")
+      {
+        operand1 += num;
+        redraw(operand1);
+      }
+      else {
+        operand2 += num;
+        redraw(operand2);
+      }
+    } 
   }
 }
 
 function appendOperator(_operator)
 {
-  // operand1 = pointCheck(mainScreen.textContent);
-
   if(operand1 != "" 
     && operator == "" 
     && operand2 == "" 
     && operandAccumulator == "")
   {
     operator = _operator;
-    redraw(operator)
+    if(dotRegex.test(operand1) == true) operand1 = pointCheck(operand1);
+    redraw(operator);
   }
 
   else if(operand1 != "" 
@@ -98,9 +116,11 @@ function appendOperator(_operator)
     && operand2 == "" 
     && operandAccumulator == "")
   {
+
     operator = _operator;
-    redraw(operator)
-   }
+    redraw(operator);
+  }
+
   else if(operand1 != "" 
     && operator != "" 
     && operand2 != "" 
@@ -111,6 +131,7 @@ function appendOperator(_operator)
     operand2 = "";
     redraw(operator);
   }
+
   else if(operand1 != "" 
     && operator != "" 
     && operand2 != "" 
@@ -121,8 +142,9 @@ function appendOperator(_operator)
     operand1 = pointCheck(operand1);
     operand2 = "";
     operator = _operator;
-    redraw(_operator)
+    redraw(_operator);
   }
+
   else
   {
     operand2 = mainScreen.textContent;
@@ -143,6 +165,7 @@ function redraw(element)
   {
     mainScreen.textContent = element;
   }
+
   else if(operand1 != "" 
     && operator != "" 
     && operand2 == "" 
@@ -152,12 +175,25 @@ function redraw(element)
     else secondaryScreen.textContent = `${operand1} ${operator}`;
     mainScreen.textContent = `${operand1}`;
   }
+
   else if(operator != "" 
     && operand2 != "" 
     && operandAccumulator == "")
   {
-    mainScreen.textContent = operand2;
+    if(equalRegex.test(secondaryScreen.textContent) == true)
+    {
+      mainScreen.textContent = operand1;
+      clearSecondaryScreen();
+    }
+
+    else if(secondaryScreen.textContent == "")
+    {
+      mainScreen.textContent = operand1;
+    }
+
+    else mainScreen.textContent = operand2;
   }
+
   else if(operator != "" 
     && operand2 == "" 
     && operandAccumulator != "")
@@ -165,6 +201,7 @@ function redraw(element)
     mainScreen.textContent = operandAccumulator;
     secondaryScreen.textContent = `${operandAccumulator} ${operator}`;
   }
+
   else 
   {
     if(operand2 == "") 
@@ -172,8 +209,14 @@ function redraw(element)
       mainScreen.textContent = "0";
       secondaryScreen.textContent = `${operand1} ${operator}`;
     } 
+
     else mainScreen.textContent = operand2;
   }
+}
+
+function clearSecondaryScreen()
+{
+  secondaryScreen.textContent = "";
 }
 
 function clear()
@@ -194,30 +237,9 @@ function clear()
   secondaryScreen.textContent = "";  
 }
 
-// function appendNumber(number){
-//   if (avoidConcat === true){
-//     avoidConcat = false;
-//     mainScreen.textContent = number;
-//   } else {
-//     mainScreen.textContent += number;
-//   }
-// }
-
-
-// function appendOperator(operator){
-//   firstOpd = mainScreen.textContent;
-//   // Prevent it from showing the point without a decimal
-//   firstOpd = pointCheck(firstOpd);
-//   mainScreen.textContent = firstOpd;
-//   currentOperator = operator;
-//   secondaryScreen.textContent = `${firstOpd} ${currentOperator}`;
-//   avoidConcat = true;
-// }
-
-function appendPoint(){ // comprobar addeventlistener y quitar el parámetro si no se va a usar
-  const equalCheck = /=/.test(secondaryScreen.textContent);
-  const dotCheck = /\./.test(mainScreen.textContent);
-  if (dotCheck === false)
+function appendPoint()
+{
+  if (dotRegex.test(mainScreen.textContent) === false)
   {
     if(operator == "" && operand2 == "")
     {
@@ -225,48 +247,57 @@ function appendPoint(){ // comprobar addeventlistener y quitar el parámetro si 
       operand1 += ".";
       return redraw(operand1);
     }
+
     // Avoid concatenating the decimal point with the second operand once the operation has been completed
-    else if(equalCheck == true)
+    else if(equalRegex.test(secondaryScreen.textContent) == true)
     {
-      clear();
+      clear(); // <--- ¿Cambiar por CE cuando se implemente?
       operand1 += "0.";
       return redraw(operand1);
     }
+
     else
     {
-      // if(operand2 == "" && mainScreen.textContent == "0") operand2 = "0.";
-      // else operand2 += ".";
-      if(operand2 != "") operand2 += "."
-      else operand2 = "0."
-      return redraw(operand2);
+      if(equalDecimalOp1 == true)
+      {
+        console.log("OKI")
+        operand1 += ".";
+        return redraw(operand1);
+      }
+      else {
+        if(operand2 != "") operand2 += ".";
+        else operand2 = "0.";
+        return redraw(operand2);
+      }
     }
   }
 }
 
 function pointCheck(num)
 {
-  const dotCheck = /\./.test(mainScreen.textContent);
-  console.log(num)
-  while (num.slice(-1) == "0" && dotCheck == true && operand2 != "0") num = num.slice(0,-1);
-  console.log(`While: ${num}`)
-  if(num.slice(-1) == ".") num = num.slice(0,-1);
-  // if(operator == "" && operand2 == "") operand1 = num;
 
-  // Muestra . y 0 de mas en la pantalla secundaria ¿solución?
-  // else if(dotCheck == true) //operand2 = num;
-  //   operand2 = num;
+  while (num.slice(-1) == "0" && dotRegex.test(mainScreen.textContent) == true && operand2 != "0") num = num.slice(0,-1);
+
+  if(num.slice(-1) == ".") num = num.slice(0,-1);
+
   return num; 
 }
 
 function equal()
 {
-
   if(operator != "" && operand1 != "")
   {
     if(operand2 == "") operand2 = mainScreen.textContent;
-    if(operandAccumulator == "" && operator == operator) // <--- WUT ???
+
+    if(secondaryScreen.textContent == "")
     {
-      operand2 = pointCheck(operand2) // <---------- AQUI
+      secondaryScreen.textContent = `${operand1} ${operator} ${operand2} =`
+      mainScreen.textContent = operate(operator, operand1, operand2);
+      operandAccumulator = mainScreen.textContent;
+    }
+    else
+    {
+      operand2 = pointCheck(operand2); // <----- DECIMAL
       secondaryScreen.textContent += ` ${operand2} =`;
       mainScreen.textContent = operate(operator, operand1, operand2);
       operandAccumulator = mainScreen.textContent;
@@ -282,11 +313,14 @@ function equal()
     operand1 = operandAccumulator;
     secondaryScreen.textContent = `${operand1} ${operator} ${operand2} =`;
     mainScreen.textContent = operate(operator, operand1, operand2);
-    operandAccumulator = mainScreen.textContent;
-    operandAccumulator = "";
+    operandAccumulator = true;
   }
   
-  else operandAccumulator = "";
+  else
+  {
+    equalDecimalOp1 = true;
+    operandAccumulator = "";
+  }
 }
 
 function add(a, b)
@@ -320,12 +354,15 @@ function operate(operator, a, b)
     case "+":
       result = add(a, b);
       break;
+
     case "-":
       result = substract(a, b);
       break;
+
     case "x":
       result = multiply(a, b);
       break;
+
     case "÷":
       if (b == "0")
       {
@@ -333,16 +370,18 @@ function operate(operator, a, b)
         allButtons.forEach(button => {
           if (button.id !== "cBtn") button.disabled = true;
         });
+
         secondaryScreen.textContent = errorMsg;
         return mainScreen.textContent = "ERROR";
       } 
       else result = divide(a, b);
       break;
+
     default:
       return "0";
   }
+  
   return Math.round((result + Number.EPSILON) * 100) / 100;
-
 }
 
 // function percent(p, num){
@@ -365,15 +404,6 @@ function positiveNegative(num)
     return plusMinus;
   }  
 }
-
-
-
-// function pointCheck(num){
-//   if (num.slice(-1) == "."){
-//     return num = num.slice(0,-1);
-//   }
-//   return num;
-// }
 
 // function keyboardSupport(e){
 //   if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
