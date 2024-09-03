@@ -9,7 +9,7 @@ const dotRegex = /\./;
 
 const numberButtons = document.querySelectorAll("[data-number]");
 const operatorButtons = document.querySelectorAll("[data-operator]");
-const percentButton = document.getElementById("percentBtn");
+const eraseButton = document.getElementById("eraseBtn");
 const clearEntryButton = document.getElementById("ceBtn");
 const clearButton = document.getElementById("cBtn");
 const plusMinusButton = document.getElementById("plusMinusBtn");
@@ -22,24 +22,21 @@ const allButtons = Array.from(document.getElementsByTagName("button"));
 const errorMsg = "You cannot divide by zero";
 
 
-// window.addEventListener('keydown', keyboardSupport);
+window.addEventListener('keydown', keyboardSupport);
 
-// percentButton.addEventListener("click", () => {
-//   secondOpd= mainScreen.textContent;
-//   mainScreen.textContent = percent(firstOpd, secondOpd);
-// });
+eraseButton.addEventListener("click", backspace);
 
-// // clearEntryButton.addEventListener("click", clearEntry);
+clearEntryButton.addEventListener("click", clearEntry);
 
 clearButton.addEventListener("click", clear);
-
-plusMinusButton.addEventListener("click", () => 
-  mainScreen.textContent = positiveNegative(mainScreen.textContent)
-);
 
 equalsButton.addEventListener("click", equal);
 
 pointButton.addEventListener("click", appendPoint);
+
+plusMinusButton.addEventListener("click", () => 
+  mainScreen.textContent = positiveNegative(mainScreen.textContent)
+);
 
 numberButtons.forEach(button =>
   button.addEventListener('click', () => appendNumber(button.textContent))
@@ -48,6 +45,76 @@ numberButtons.forEach(button =>
 operatorButtons.forEach(button => 
   button.addEventListener("click", () => appendOperator(button.textContent))
 );
+
+
+function clearSecondaryScreen()
+{
+  secondaryScreen.textContent = "";
+}
+
+function backspace()
+{
+  if(operand1 != "" && operator == "")
+  {
+    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
+    operand1 = mainScreen.textContent;
+
+    if(mainScreen.textContent == "") mainScreen.textContent = "0";
+  }
+
+  else if(operand1 != ""
+    && operator != ""
+    && equalRegex.test(secondaryScreen.textContent) == false)
+  {
+    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
+    operand2 = mainScreen.textContent;
+
+    if(mainScreen.textContent == "") mainScreen.textContent = "0";
+  }
+
+  else if(equalRegex.test(secondaryScreen.textContent) == true)
+  {
+    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
+    secondaryScreen.textContent = "";
+    mainScreen.textContent = "0";
+  } 
+}
+
+function clearEntry()
+{
+  mainScreen.textContent = "0";
+
+  if(operand1 != "" && operator == "") operand1 = "";
+
+  else if(equalRegex.test(secondaryScreen.textContent) == true)
+  {
+    secondaryScreen.textContent = "";
+    operand1 = "0";
+  }
+
+  else operand2 = "";
+}
+
+function clear()
+{
+  if (mainScreen.textContent === "ERROR")
+  {
+    clearButton.classList.remove("btn-red");
+    allButtons.forEach(button => {
+      if (button.id !== "cBtn")
+        button.disabled = false;
+    });
+  }
+
+  operand1 = "";
+  operator = "";
+  operand2 = "";
+  equalDecimalOp1 = false;
+  operandAccumulator = "";
+  mainScreen.textContent = "0";
+  secondaryScreen.textContent = "";  
+}
+
 
 function appendNumber(num)
 {
@@ -63,8 +130,7 @@ function appendNumber(num)
       redraw(operand1);
     }
 
-    else if(operator != "" 
-      && operand2 == "")
+    else if(operator != "" && operand2 == "")
     {
       operand2 = num;
       redraw(num);
@@ -88,14 +154,18 @@ function appendNumber(num)
     {
       if(secondaryScreen.textContent == "")
       {
+        // Prevent the entered number from concatenating with the screen content when performing
+        //  a CE or Backspace after an operation has been completed using the = operator
+        if(mainScreen.textContent == "0") operand1 = "";
         operand1 += num;
         redraw(operand1);
       }
+
       else {
         operand2 += num;
         redraw(operand2);
       }
-    } 
+    }
   }
 }
 
@@ -153,88 +223,8 @@ function appendOperator(_operator)
     operand1 = pointCheck(operand1);
     operand2 = "";
     operator = _operator;
-    redraw(_operator)
+    redraw(_operator);
   }
-}
-
-function redraw(element)
-{
-  if(operand2 == "" 
-    && operator == "" 
-    && operandAccumulator == "")
-  {
-    mainScreen.textContent = element;
-  }
-
-  else if(operand1 != "" 
-    && operator != "" 
-    && operand2 == "" 
-    && operandAccumulator == "") 
-  {
-    if(operand1 == "ERROR") secondaryScreen.textContent = errorMsg;
-    else secondaryScreen.textContent = `${operand1} ${operator}`;
-    mainScreen.textContent = `${operand1}`;
-  }
-
-  else if(operator != "" 
-    && operand2 != "" 
-    && operandAccumulator == "")
-  {
-    if(equalRegex.test(secondaryScreen.textContent) == true)
-    {
-      mainScreen.textContent = operand1;
-      clearSecondaryScreen();
-    }
-
-    else if(secondaryScreen.textContent == "")
-    {
-      mainScreen.textContent = operand1;
-    }
-
-    else mainScreen.textContent = operand2;
-  }
-
-  else if(operator != "" 
-    && operand2 == "" 
-    && operandAccumulator != "")
-  {
-    mainScreen.textContent = operandAccumulator;
-    secondaryScreen.textContent = `${operandAccumulator} ${operator}`;
-  }
-
-  else 
-  {
-    if(operand2 == "") 
-    {
-      mainScreen.textContent = "0";
-      secondaryScreen.textContent = `${operand1} ${operator}`;
-    } 
-
-    else mainScreen.textContent = operand2;
-  }
-}
-
-function clearSecondaryScreen()
-{
-  secondaryScreen.textContent = "";
-}
-
-function clear()
-{
-  if (mainScreen.textContent === "ERROR")
-  {
-    clearButton.classList.remove("btn-red");
-    allButtons.forEach(button => {
-      if (button.id !== "cBtn")
-        button.disabled = false;
-    });
-  }
-  operand1 = "";
-  operator = "";
-  operand2 = "";
-  operandAccumulator = "";
-  mainScreen.textContent = "0";
-  secondaryScreen.textContent = "";  
 }
 
 function appendPoint()
@@ -258,12 +248,13 @@ function appendPoint()
 
     else
     {
-      if(equalDecimalOp1 == true)
+      if(equalDecimalOp1 == true && secondaryScreen.textContent == "")
       {
-        console.log("OKI")
         operand1 += ".";
+        equalDecimalOp1 = false;
         return redraw(operand1);
       }
+      
       else {
         if(operand2 != "") operand2 += ".";
         else operand2 = "0.";
@@ -273,10 +264,18 @@ function appendPoint()
   }
 }
 
+
 function pointCheck(num)
 {
-
-  while (num.slice(-1) == "0" && dotRegex.test(mainScreen.textContent) == true && operand2 != "0") num = num.slice(0,-1);
+  if(dotRegex.test(num) == true)
+  {
+    while (num.slice(-1) == "0"
+      && dotRegex.test(mainScreen.textContent) == true
+      && operand2 != "0")
+      {
+        num = num.slice(0,-1);
+      }
+  }
 
   if(num.slice(-1) == ".") num = num.slice(0,-1);
 
@@ -295,9 +294,10 @@ function equal()
       mainScreen.textContent = operate(operator, operand1, operand2);
       operandAccumulator = mainScreen.textContent;
     }
+
     else
     {
-      operand2 = pointCheck(operand2); // <----- DECIMAL
+      operand2 = pointCheck(operand2);
       secondaryScreen.textContent += ` ${operand2} =`;
       mainScreen.textContent = operate(operator, operand1, operand2);
       operandAccumulator = mainScreen.textContent;
@@ -313,7 +313,7 @@ function equal()
     operand1 = operandAccumulator;
     secondaryScreen.textContent = `${operand1} ${operator} ${operand2} =`;
     mainScreen.textContent = operate(operator, operand1, operand2);
-    operandAccumulator = true;
+    operandAccumulator = "";
   }
   
   else
@@ -322,6 +322,24 @@ function equal()
     operandAccumulator = "";
   }
 }
+
+function positiveNegative(num)
+{
+  const plusMinus = num - (num * 2);
+
+  if(operator == "" && operand2 == "")
+  {
+    operand1 = plusMinus;
+    return plusMinus;
+  }
+
+  else
+  {
+    operand2 = plusMinus;
+    return plusMinus;
+  }  
+}
+
 
 function add(a, b)
 {
@@ -384,40 +402,70 @@ function operate(operator, a, b)
   return Math.round((result + Number.EPSILON) * 100) / 100;
 }
 
-// function percent(p, num){
-//   if (num == "") num = mainScreen.textContent;
-//   return (Number(p) / 100) * Number(num);
-// }
 
-function positiveNegative(num)
-{
-  const plusMinus = num - (num * 2)
-
-  if(operator == "" && operand2 == "")
-  {
-    operand1 = plusMinus;
-    return plusMinus;
-  }
-  else
-  {
-    operand2 = plusMinus;
-    return plusMinus;
-  }  
+function keyboardSupport(e){
+  if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
+  if (e.key === "+" || e.key === "-") appendOperator(e.key);
+  if (e.key === "*") appendOperator("x");
+  if (e.key === "/") appendOperator("÷");
+  if (e.key === "Enter") equal();
+  if (e.key === ".") appendPoint();
+  if (e.key === "Delete") clearEntry();
+  if (e.key === "Escape") clear();
+  if (e.key === "Backspace") backspace();
 }
 
-// function keyboardSupport(e){
-//   if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
-//   if (e.key === ".") appendPoint();
-//   if (e.key === "Backspace") clearEntry();
-//   if (e.key === "Delete") clear();
-//   if (e.key === "%") mainScreen.textContent = percent(firstOpd, secondOpd); // Check
-//   if (e.key === "Enter") equal();
-//   if (e.key === "+" || e.key === "-") appendOperator(e.key);
-//   if (e.key === "*") appendOperator("x");
-//   if (e.key === "/") appendOperator("÷");
-// }
 
-// function clearEntry(){
-//   mainScreen.textContent = "0";
-//   avoidConcat = true;
-// }
+function redraw(element)
+{
+  if(operand2 == "" 
+    && operator == "" 
+    && operandAccumulator == "")
+  {
+    mainScreen.textContent = element;
+  }
+
+  else if(operand1 != "" 
+    && operator != "" 
+    && operand2 == "" 
+    && operandAccumulator == "") 
+  {
+    if(operand1 == "ERROR") secondaryScreen.textContent = errorMsg;
+    else secondaryScreen.textContent = `${operand1} ${operator}`;
+    mainScreen.textContent = `${operand1}`;
+  }
+
+  else if(operator != "" 
+    && operand2 != "" 
+    && operandAccumulator == "")
+  {
+    if(equalRegex.test(secondaryScreen.textContent) == true)
+    {
+      mainScreen.textContent = operand1;
+      clearSecondaryScreen();
+    }
+
+    else if(secondaryScreen.textContent == "") mainScreen.textContent = operand1;
+
+    else mainScreen.textContent = operand2;
+  }
+
+  else if(operator != "" 
+    && operand2 == "" 
+    && operandAccumulator != "")
+  {
+    mainScreen.textContent = operandAccumulator;
+    secondaryScreen.textContent = `${operandAccumulator} ${operator}`;
+  }
+
+  else 
+  {
+    if(operand2 == "") 
+    {
+      mainScreen.textContent = "0";
+      secondaryScreen.textContent = `${operand1} ${operator}`;
+    } 
+
+    else mainScreen.textContent = operand2;
+  }
+}
