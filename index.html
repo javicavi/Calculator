@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="shortcut icon" href="calculator.png"/>
+  <link rel="shortcut icon" href="calcFavicon.png"/>
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
   <title>Calculator</title>
@@ -12,11 +12,11 @@
   <main class="main">
     <div class="calculator">
       <div class="screen">
-        <div class="screen-last" id="lastOperationScreen"></div>
-        <div class="screen-current" id="currentOperationScreen">0</div>
+        <div class="screen-secondary" id="secondaryScreen"></div>
+        <div class="screen-main" id="mainScreen">0</div>
       </div>
       <div class="buttons-grid">
-        <button class="btn" onclick="this.blur();" id="percentBtn">%</button>
+        <button class="btn" onclick="this.blur();" id="eraseBtn">&#x232B;</button>
         <button class="btn" onclick="this.blur();" id="ceBtn">CE</button>
         <button class="btn" onclick="this.blur();" id="cBtn">C</button>
         <button class="btn" onclick="this.blur();" data-operator>÷</button>
@@ -39,17 +39,9 @@
         <button class="btn" onclick="this.blur();" id="plusMinusBtn">+/-</button>
         <button class="btn" onclick="this.blur();" data-number>0</button>
         <button class="btn" onclick="this.blur();" id="pointBtn">.</button>
-        <button class="btn" onclick="this.blur();" id="equalsBtn">=</button>
+        <button class="btn btn-dark-blue" onclick="this.blur();" id="equalsBtn">=</button>
       </div>
     </div>
   </main>
-  <footer class="footer">
-    <p>
-
-    </p>
-    <a href="https://github.com/michalosman" target="_blank">
-      <i class="fab fa-github"></i>
-    </a>
-  </footer>
 </body>
 </html>

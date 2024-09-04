@@ -7,12 +7,15 @@
   --btn: #e5e6eb;;
   --btn-hover: #d2d4dc;
   --btn-active: #c0c2ce;
-  --btn-red: #ff6666;
-  --btn-red-hover: #e95858;
-  --btn-red-active: #db5151;
+  --btn-red-alert: #ff6666;
+  --btn-red-alert-hover: #e95858;
+  --btn-red-alert-active: #db5151;
   --btn-blue: #adcbe3;
   --btn-blue-hover: #9cb8cf;
   --btn-blue-active: #89a4b9;
+  --btn-dark-blue: #afbfeb;
+  --btn-dark-blue-hover: #9fb2e6;
+  --btn-dark-blue-active: #90a3d8;
 }
 
 *,
@@ -23,19 +26,12 @@
   margin: 0;
 }
 
-html {
-  /* footer support */
-  position: relative;
-  min-height: 100%;
-}
 
 body {
   background-color: var(--background);
   color: var(--font);
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
-  /* footer support */
-  margin-bottom: 100px;
 }
 
 button {
@@ -78,13 +74,13 @@ button {
   word-break: break-all;
 }
 
-.screen-last {
-  min-height: 32px;
+.screen-secondary {
+  min-height: 30px;
   font-size: 20px;
 }
 
-.screen-current {
-  min-height: 64px;
+.screen-main {
+  min-height: 60px;
   font-size: 40px;
 }
 
@@ -114,16 +110,16 @@ button {
   background-color: var(--btn-active);
 }
 
-.btn-red {
-  background-color: var(--btn-red);
+.btn-red-alert {
+  background-color: var(--btn-red-alert);
 }
 
-.btn-red:hover {
-  background-color: var(--btn-red-hover);
+.btn-red-alert:hover {
+  background-color: var(--btn-red-alert-hover);
 }
 
-.btn-red:active {
-  background-color: var(--btn-red-active);
+.btn-red-alert:active {
+  background-color: var(--btn-red-alert-active);
 }
 
 button[data-operator] {
@@ -138,17 +134,14 @@ button[data-operator]:active {
   background-color: var(--btn-blue-active);
 }
 
-/* FOOTER */
+.btn-dark-blue {
+  background-color: var(--btn-dark-blue);
+}
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px;
-  font-size: 20px;
+.btn-dark-blue:hover {
+  background-color: var(--btn-dark-blue-hover);
+}
+
+.btn-dark-blue:active {
+  background-color: var(--btn-dark-blue-active);
 }
