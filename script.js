@@ -15,8 +15,8 @@ const clearButton = document.getElementById("cBtn");
 const plusMinusButton = document.getElementById("plusMinusBtn");
 const pointButton = document.getElementById("pointBtn");
 const equalsButton = document.getElementById("equalsBtn");
-const secondaryScreen = document.getElementById("lastOperationScreen");
-const mainScreen = document.getElementById("currentOperationScreen");
+const secondaryScreen = document.getElementById("secondaryScreen");
+const mainScreen = document.getElementById("mainScreen");
 // Converted to an array in order to use a forEach
 const allButtons = Array.from(document.getElementsByTagName("button"));
 const errorMsg = "You cannot divide by zero";
@@ -46,49 +46,55 @@ operatorButtons.forEach(button =>
   button.addEventListener("click", () => appendOperator(button.textContent))
 );
 
+function clearMainScreen() {
+  mainScreen.textContent = "0";
+}
 
-function clearSecondaryScreen()
-{
+function clearSecondaryScreen() {
   secondaryScreen.textContent = "";
+}
+
+function mainScreenBackspace() {
+  mainScreen.textContent = mainScreen.textContent.slice(0, -1);
 }
 
 function backspace()
 {
   if(operand1 != "" && operator == "")
   {
-    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
+    mainScreenBackspace();
     operand1 = mainScreen.textContent;
 
-    if(mainScreen.textContent == "") mainScreen.textContent = "0";
+    if(mainScreen.textContent == "") clearMainScreen();
   }
 
   else if(operand1 != ""
     && operator != ""
     && equalRegex.test(secondaryScreen.textContent) == false)
   {
-    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
+    mainScreenBackspace();
     operand2 = mainScreen.textContent;
 
-    if(mainScreen.textContent == "") mainScreen.textContent = "0";
+    if(mainScreen.textContent == "") clearMainScreen();
   }
 
   else if(equalRegex.test(secondaryScreen.textContent) == true)
   {
-    mainScreen.textContent = mainScreen.textContent.slice(0, -1);
-    secondaryScreen.textContent = "";
-    mainScreen.textContent = "0";
+    mainScreenBackspace();
+    clearSecondaryScreen();
+    clearMainScreen();
   } 
 }
 
 function clearEntry()
 {
-  mainScreen.textContent = "0";
+  clearMainScreen();
 
   if(operand1 != "" && operator == "") operand1 = "";
 
   else if(equalRegex.test(secondaryScreen.textContent) == true)
   {
-    secondaryScreen.textContent = "";
+    clearSecondaryScreen();
     operand1 = "0";
   }
 
@@ -99,7 +105,7 @@ function clear()
 {
   if (mainScreen.textContent === "ERROR")
   {
-    clearButton.classList.remove("btn-red");
+    clearButton.classList.remove("btn-red-alert");
     allButtons.forEach(button => {
       if (button.id !== "cBtn")
         button.disabled = false;
@@ -111,8 +117,8 @@ function clear()
   operand2 = "";
   equalDecimalOp1 = false;
   operandAccumulator = "";
-  mainScreen.textContent = "0";
-  secondaryScreen.textContent = "";  
+  clearMainScreen();
+  clearSecondaryScreen();
 }
 
 
@@ -154,8 +160,8 @@ function appendNumber(num)
     {
       if(secondaryScreen.textContent == "")
       {
-        // Prevent the entered number from concatenating with the screen content when performing
-        //  a CE or Backspace after an operation has been completed using the = operator
+        /* Prevent the entered number from concatenating with the screen content when performing
+         a CE or Backspace after an operation has been completed using the = operator */
         if(mainScreen.textContent == "0") operand1 = "";
         operand1 += num;
         redraw(operand1);
@@ -241,8 +247,8 @@ function appendPoint()
     // Avoid concatenating the decimal point with the second operand once the operation has been completed
     else if(equalRegex.test(secondaryScreen.textContent) == true)
     {
-      clear(); // <--- ¿Cambiar por CE cuando se implemente?
-      operand1 += "0.";
+      clearEntry();
+      operand1 += ".";
       return redraw(operand1);
     }
 
@@ -341,23 +347,19 @@ function positiveNegative(num)
 }
 
 
-function add(a, b)
-{
+function add(a, b) {
   return a + b;
 }
 
-function substract(a, b)
-{
+function substract(a, b) {
   return a - b;
 }
 
-function multiply(a, b)
-{
+function multiply(a, b) {
   return a * b;
 }
 
-function divide(a, b)
-{
+function divide(a, b) {
   return a / b;
 }
 
@@ -384,7 +386,7 @@ function operate(operator, a, b)
     case "÷":
       if (b == "0")
       {
-        clearButton.classList.add("btn-red");
+        clearButton.classList.add("btn-red-alert");
         allButtons.forEach(button => {
           if (button.id !== "cBtn") button.disabled = true;
         });
@@ -462,7 +464,7 @@ function redraw(element)
   {
     if(operand2 == "") 
     {
-      mainScreen.textContent = "0";
+      clearMainScreen();
       secondaryScreen.textContent = `${operand1} ${operator}`;
     } 
 
